@@ -4,7 +4,11 @@ declare(strict_types=1);
 use Slim\App;
 use App\Config;
 use App\Contracts\RequestValidatorFactoryInterface;
+use App\Contracts\TaskServiceProviderInterface;
+use App\Contracts\UserProviderServiceInterface;
 use App\ResponseFormatter;
+use App\Services\TaskServiceProvider;
+use App\Services\UserProviderService;
 use App\Validators\RequestValidatorFactory;
 
 use function DI\create;
@@ -20,9 +24,11 @@ return [
     App::class  => function(ContainerInterface $container){
         AppFactory::setContainer($container);
         $router = require CONFIG_PATH . '/routes/web.php';
+        $middleware = require APP_PATH . '/middleware.php';
         $app = AppFactory::create();
         $app->addBodyParsingMiddleware();
         $router($app);
+        $middleware($app);
         return $app;
     },
 
@@ -52,5 +58,11 @@ return [
     //Validator::class => create(Validator::class),
    
     RequestValidatorFactoryInterface::class => fn(ContainerInterface $container) => 
-    $container->get(RequestValidatorFactory::class)
+    $container->get(RequestValidatorFactory::class),
+
+    UserProviderServiceInterface::class => fn(ContainerInterface $container) =>
+     $container->get(UserProviderService::class),
+    
+    TaskServiceProviderInterface::class => fn(ContainerInterface $container) =>
+    $container->get(TaskServiceProvider::class),
 ];

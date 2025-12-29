@@ -18,9 +18,9 @@ class CreateTaskRequestValidator implements TaskRequestValidatorInterface
             $v = new Validator($data);
 
             $v->rule('required', ['title', 'due', 'priority',"done" ,'user_id']);
-            $v->rule('lengthMax', 'title', 50);
+            $v->rule('lengthMax', 'title', 50)->message('title is required');
             $v->rule('lengthMax', 'description', 255);
-            $v->rule('dateFormat', 'dateFormat', 'm/d/Y g:i A');
+            $v->rule('dateFormat', 'due', 'm/d/Y g:i A');
 
              if (! $v->validate()) {
             throw new ValidationException($v->errors());

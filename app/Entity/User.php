@@ -1,13 +1,14 @@
 <?php
 namespace App\Entity;
 
+use App\Contracts\UserInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'users')]
-class User {
+class User implements UserInterface {
     #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: 'integer')]
     private int $id;
 
@@ -31,5 +32,10 @@ class User {
     public function getId(): int
     {
         return $this->id;
+    }
+
+	public function getPassword(): string 
+    {
+        return $this->password;
     }
 }
