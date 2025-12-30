@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -6,7 +7,8 @@ use DateTime;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'tasks')]
-class Task {
+class Task implements \JsonSerializable
+{
     #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: 'integer')]
     private int $id;
 
@@ -36,72 +38,107 @@ class Task {
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     private User $user;
 
-    public function __construct(User $user, array $data) {
+    public function __construct(User $user, array $data)
+    {
+
+        if (!empty($data['due'])) {
+            $dueObject = DateTime::createFromFormat('d-m-Y g:i:s A', $data['due']);
+            $this->due = $dueObject ?: null;
+        } else {
+            $this->due = null;
+        }
+
         $this->user = $user;
         $this->title = $data['title'];
         $this->description = $data['description'] ?? null;
-        $this->priority = (int)$data['priority'];
-        $this->done = (bool)$data['done'];
+        $this->priority = (int)($data['priority'] ?? 1);
+        $this->done = (bool)($data['done'] ?? false);
         $this->createdAt = new DateTime();
     }
 
     // --- Getters ---
 
-    public function getId(): int {
+    public function getId(): int
+    {
         return $this->id;
     }
 
-    public function getTitle(): string {
+    public function getTitle(): string
+    {
         return $this->title;
     }
 
-    public function getDescription(): ?string {
+    public function getDescription(): ?string
+    {
         return $this->description;
     }
 
-    public function getDue(): ?DateTime {
+    public function getDue(): ?DateTime
+    {
         return $this->due;
     }
 
-    public function getDone(): bool {
+    public function getDone(): bool
+    {
         return $this->done;
     }
 
-    public function getPriority(): int {
+    public function getPriority(): int
+    {
         return $this->priority;
     }
 
-    public function getCreatedAt(): DateTime {
+    public function getCreatedAt(): DateTime
+    {
         return $this->createdAt;
     }
 
-    public function getDeletedAt(): ?DateTime {
+    public function getDeletedAt(): ?DateTime
+    {
         return $this->deletedAt;
     }
 
-    public function getUser(): User {
+    public function getUser(): User
+    {
         return $this->user;
     }
 
     // --- Setters (Optional but recommended for updates) ---
 
-    public function setTitle(string $title): self {
+    public function setTitle(string $title): self
+    {
         $this->title = $title;
         return $this;
     }
 
-    public function setDone(bool $done): self {
+    public function setDone(bool $done): self
+    {
         $this->done = $done;
         return $this;
     }
 
-    public function setPriority(int $priority): self {
+    public function setPriority(int $priority): self
+    {
         $this->priority = $priority;
         return $this;
     }
-       public function setDescription(string $description): self {
+    public function setDescription(string $description): self
+    {
         $this->description = $description;
         return $this;
     }
 
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'description' => $this->description ?? '',
+            'due' => $this->due ? $this->due->format('d-m-Y g:i:s A') : null,
+            'done' => $this->done,
+            'priority' => $this->priority,
+            'createdAt' => $this->createdAt->format('Y-m-d g:i:s A'),
+            'user_id' =>$this->user->getId()
+        ];
+    }
 }
