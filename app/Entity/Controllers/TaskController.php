@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Controllers;
 
@@ -6,7 +7,7 @@ use App\Contracts\RequestValidatorFactoryInterface;
 use App\Contracts\TaskServiceProviderInterface;
 use App\Contracts\UserProviderServiceInterface;
 use App\ResponseFormatter;
-use App\Validators\CreateTaskRequestValidator;
+use App\Validators\CreateRequestValidator;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
@@ -33,23 +34,15 @@ class TaskController
 
     public function store(Request $request, Response $response): Response
     {
-        $data = $this->requestValidatorFactory->make(CreateTaskRequestValidator::class)->validate(
+        $data = $this->requestValidatorFactory->make(CreateRequestValidator::class)->validate(
             $request->getParsedBody() ?? []
         );
         $user = $this->userProvider->getUserById($data['user_id']);
         $task = $this->taskServiceProvider->createTask($user, $data);
 
-        $responseData = [
-            'id'          => $task->getId(),
-            'title'       => $task->getTitle(),
-            'description' => $task->getDescription(),
-            'done'        => $task->getDone(),
-            'createdAt'   => $task->getCreatedAt()->format('Y-m-d H:i:s'),
-        ];
-
         $response->getBody()->write(json_encode($task));
         return $response
             ->withHeader('Content-Type', 'application/json')
-            ->withStatus(200);
+            ->withStatus(201);
     }
 }
