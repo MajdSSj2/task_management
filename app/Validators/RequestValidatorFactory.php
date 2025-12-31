@@ -5,7 +5,7 @@ namespace App\Validators;
 use App\Contracts\RequestValidatorFactoryInterface;
 use Psr\Container\ContainerInterface;
 
-use App\Contracts\TaskRequestValidatorInterface;
+use App\Contracts\RequestValidatorInterface;
 
 class RequestValidatorFactory  implements RequestValidatorFactoryInterface
 {
@@ -14,11 +14,11 @@ class RequestValidatorFactory  implements RequestValidatorFactoryInterface
         
     }
 
-	public function make(string $class): TaskRequestValidatorInterface 
+	public function make(string $class): RequestValidatorInterface
     {
         $validator = $this->container->get($class);
         
-        if ($validator  instanceof TaskRequestValidatorInterface ) {
+        if ($validator  instanceof RequestValidatorInterface ) {
             return $validator;
         }
 

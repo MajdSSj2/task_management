@@ -8,8 +8,8 @@ use App\Contracts\TaskServiceProviderInterface;
 use App\Contracts\UserProviderServiceInterface;
 use App\ResponseFormatter;
 use App\Validators\CreateRequestValidator;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 class TaskController
 {
@@ -17,19 +17,18 @@ class TaskController
         private readonly ResponseFormatter $formatter,
         private readonly RequestValidatorFactoryInterface $requestValidatorFactory,
         private readonly UserProviderServiceInterface $userProvider,
-        private readonly TaskServiceProviderInterface $taskServiceProvider
+        private readonly TaskServiceProviderInterface $taskServiceProvider,
+        private readonly ResponseFormatter $responseFormatter
     ) {}
 
     public function index(Request $request, Response $response): Response
     {
         $tasks = $this->taskServiceProvider->getAllTasks();
 
-        // Convert Doctrine Objects to json encode it in the response
         $tasks = $this->formatter->asJson($tasks);
         $response->getBody()->write(json_encode($tasks));
-        return $response
-            ->withHeader('Content-Type', 'application/json')
-            ->withStatus(200);
+
+       return  $this->responseFormatter->response($response, 200);
     }
 
     public function store(Request $request, Response $response): Response
@@ -41,8 +40,7 @@ class TaskController
         $task = $this->taskServiceProvider->createTask($user, $data);
 
         $response->getBody()->write(json_encode($task));
-        return $response
-            ->withHeader('Content-Type', 'application/json')
-            ->withStatus(201);
+        return  $this->responseFormatter->response($response, 200);
+
     }
 }

@@ -4,5 +4,5 @@ namespace App\Contracts;
 
 interface RequestValidatorFactoryInterface
 {
-    public function make(string $class) : TaskRequestValidatorInterface;
+    public function make(string $class) : RequestValidatorInterface;
 }

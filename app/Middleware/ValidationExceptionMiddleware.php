@@ -2,16 +2,17 @@
 
 namespace App\Middleware;
 
+use App\Exceptions\RegistrationException;
 use App\Exceptions\ValidationException;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Http\Message\ResponseFactoryInterface;
 
 class ValidationExceptionMiddleware implements MiddlewareInterface
 {
-    public function __construct(private readonly ResponseFactoryInterface $responseFactory)
+    public function __construct(private readonly ResponseFactoryInterface $response)
     {
        
     }
@@ -21,7 +22,16 @@ class ValidationExceptionMiddleware implements MiddlewareInterface
         try {
             return $handler->handle($request);
         } catch (ValidationException $e) {
-            $response = $this->responseFactory->createResponse(422);
+            $response = $this->response->createResponse(422);
+            $response->getBody()->write(
+                json_encode([
+                    'errors' => $e->errors
+                ])
+            );
+            return $response->withHeader('Content-Type', 'application/json');
+        }
+        catch (RegistrationException $e){
+            $response = $this->response->createResponse(409);
             $response->getBody()->write(
                 json_encode([
                     'errors' => $e->errors

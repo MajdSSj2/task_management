@@ -25,8 +25,12 @@ class User implements UserInterface {
     #[ORM\OneToMany(targetEntity: Task::class, mappedBy: 'user')]
     private Collection $tasks;
 
-    public function __construct() {
+    public function __construct(array $data) {
         $this->tasks = new ArrayCollection();
+        $this->name = $data["name"];
+        $this->email = $data["email"];
+
+
     }
 
     public function getId(): int
@@ -37,5 +41,19 @@ class User implements UserInterface {
 	public function getPassword(): string 
     {
         return $this->password;
+    }
+
+    public function getName() : string
+    {
+        return $this->name;
+    }
+
+    public function getEmail(): string {
+        return $this->email;
+    }
+
+    public function setPassword(string $hashedPassword)
+    {
+        $this->password = $hashedPassword;
     }
 }

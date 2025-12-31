@@ -2,7 +2,7 @@
 
 namespace App\Contracts;
 
-interface TaskRequestValidatorInterface 
+interface RequestValidatorInterface
 {
     public function validate(array $data) : array;
 }

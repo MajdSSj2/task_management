@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use App\Contracts\AuthServiceProviderInterface;
+use App\Services\AuthServiceProvider;
 use Slim\App;
 use App\Config;
 use App\Contracts\RequestValidatorFactoryInterface;
@@ -65,4 +67,9 @@ return [
     
     TaskServiceProviderInterface::class => fn(ContainerInterface $container) =>
     $container->get(TaskServiceProvider::class),
+
+    AuthServiceProviderInterface::class => fn(ContainerInterface $container) =>
+    $container->get(AuthServiceProvider::class),
+
+
 ];
