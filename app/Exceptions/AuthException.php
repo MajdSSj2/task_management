@@ -4,14 +4,14 @@ namespace App\Exceptions;
 
 use Throwable;
 
-class RegistrationException extends \Exception
+class AuthException extends \Exception
 {
 
     public readonly array $errors;
 
     public function __construct(
         array|string $errors = [],
-        string $message = "Registration failed",
+        string $message = "",
         int $code = 0,
         ?Throwable $previous = null
     ) {

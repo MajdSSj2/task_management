@@ -36,7 +36,7 @@ class TaskController
         $data = $this->requestValidatorFactory->make(CreateRequestValidator::class)->validate(
             $request->getParsedBody() ?? []
         );
-        $user = $this->userProvider->getUserById($data['user_id']);
+        $user = $this->userProvider->getUserById($request->getAttribute('user')['sub']);
         $task = $this->taskServiceProvider->createTask($user, $data);
 
         $response->getBody()->write(json_encode($task));

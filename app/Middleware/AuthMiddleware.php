@@ -37,7 +37,7 @@ class AuthMiddleware implements MiddlewareInterface
 
         try {
             // 4. Decode/Verify the token (using your JWT secret)
-            $decoded = JWT::decode($token, new Key($_ENV['SECRET_KEY'], 'HS256'));
+            $decoded = (array) JWT::decode($token, new Key($_ENV['SECRET_KEY'], 'HS256'));
             $request = $request->withAttribute('user', $decoded);
             // If successful, proceed to the controller
             return $handler->handle($request);

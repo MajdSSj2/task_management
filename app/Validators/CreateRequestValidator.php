@@ -17,7 +17,7 @@ class CreateRequestValidator implements RequestValidatorInterface
         {
             $v = new Validator($data);
 
-            $v->rule('required', ['title', 'due', 'priority',"done" ,'user_id']);
+            $v->rule('required', ['title', 'due', 'priority',"done"]);
             $v->rule('lengthMax', 'title', 50)->message('title is required');
             $v->rule('lengthMax', 'description', 255);
             $v->rule('dateFormat', 'due', 'd-m-Y g:i:s A');

@@ -2,7 +2,7 @@
 
 namespace App\Middleware;
 
-use App\Exceptions\RegistrationException;
+use App\Exceptions\AuthException;
 use App\Exceptions\ValidationException;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -12,10 +12,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class ValidationExceptionMiddleware implements MiddlewareInterface
 {
-    public function __construct(private readonly ResponseFactoryInterface $response)
-    {
-       
-    }
+    public function __construct(private readonly ResponseFactoryInterface $response) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -29,11 +26,11 @@ class ValidationExceptionMiddleware implements MiddlewareInterface
                 ])
             );
             return $response->withHeader('Content-Type', 'application/json');
-        }
-        catch (RegistrationException $e){
-            $response = $this->response->createResponse(409);
+        } catch (AuthException $e) {
+            $response = $this->response->createResponse($e->getCode());
             $response->getBody()->write(
                 json_encode([
+                    'message' => $e->getMessage(),
                     'errors' => $e->errors
                 ])
             );
