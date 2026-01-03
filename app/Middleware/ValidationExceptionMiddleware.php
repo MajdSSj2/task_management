@@ -26,15 +26,8 @@ class ValidationExceptionMiddleware implements MiddlewareInterface
                 ])
             );
             return $response->withHeader('Content-Type', 'application/json');
-        } catch (AuthException $e) {
-            $response = $this->response->createResponse($e->getCode());
-            $response->getBody()->write(
-                json_encode([
-                    'message' => $e->getMessage(),
-                    'errors' => $e->errors
-                ])
-            );
-            return $response->withHeader('Content-Type', 'application/json');
+        
         }
+        
     }
 }

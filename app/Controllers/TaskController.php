@@ -14,7 +14,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 class TaskController
 {
     public function __construct(
-        private readonly ResponseFormatter $formatter,
         private readonly RequestValidatorFactoryInterface $requestValidatorFactory,
         private readonly UserProviderServiceInterface $userProvider,
         private readonly TaskServiceProviderInterface $taskServiceProvider,
@@ -23,12 +22,21 @@ class TaskController
 
     public function index(Request $request, Response $response): Response
     {
-        $tasks = $this->taskServiceProvider->getAllTasks();
+        $tasks = $this->taskServiceProvider->getAllTasks($request->getAttribute('user')['sub']);
 
-        $tasks = $this->formatter->asJson($tasks);
+        //$tasks = $this->formatter->asJson($tasks);
         $response->getBody()->write(json_encode($tasks));
 
        return  $this->responseFormatter->response($response, 200);
+    }
+
+    public function show(Request $request, Response $response, array $args) : Response
+    {
+        $task = $this->taskServiceProvider->getTask((int) $args['id'],
+         $request->getAttribute('user')['sub']);
+        $response->getBody()->write(json_encode($task));
+      return  $this->responseFormatter->response($response, 200);
+
     }
 
     public function store(Request $request, Response $response): Response
@@ -41,6 +49,23 @@ class TaskController
 
         $response->getBody()->write(json_encode($task));
         return  $this->responseFormatter->response($response, 200);
+
+    }
+
+    public function destroy(Request $request, Response $response, array $args)
+    {
+             $this->taskServiceProvider->deleteTask((int) $args['id'],
+               $request->getAttribute('user')['sub']);
+            return  $this->responseFormatter->response($response, 200);
+    }
+
+    public function update(Request $request, Response $response, array $args)
+    {
+       $task = $this->taskServiceProvider->updateTask((int)$args['id'], 
+        $request->getAttribute('user')['sub'],
+        $request->getParsedBody());
+        $response->getBody()->write(json_encode($task));
+         return  $this->responseFormatter->response($response, 200);
 
     }
 }

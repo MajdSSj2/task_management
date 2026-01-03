@@ -103,7 +103,7 @@ class Task implements \JsonSerializable
         return $this->user;
     }
 
-    // --- Setters (Optional but recommended for updates) ---
+
 
     public function setTitle(string $title): self
     {
@@ -117,14 +117,34 @@ class Task implements \JsonSerializable
         return $this;
     }
 
-    public function setPriority(int $priority): self
+ public function setPriority(int|string $priority): self
     {
-        $this->priority = $priority;
+        $this->priority = (int) $priority;
         return $this;
     }
     public function setDescription(string $description): self
     {
         $this->description = $description;
+        return $this;
+    }
+
+    public function setDeletedAt(DateTime $date)
+    {
+        $this->deletedAt = $date;
+    }
+    public function setCreatedAt(DateTime $date)
+    {
+        $this->createdAt  = $date;
+    }
+
+public function setDue(DateTime|string|null $date): self
+    {
+        if (is_string($date)) {
+            // Match the format used in your constructor/JSON
+            $this->due = DateTime::createFromFormat('Y-m-d g:i:s A', $date) ?: new DateTime($date);
+        } else {
+            $this->due = $date;
+        }
         return $this;
     }
 
